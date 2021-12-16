@@ -12,7 +12,7 @@
  ```
  git clone --recursive git@github.com:MateyN/minitalk.git
  cd minitalk
- make all 
+ make all
  ```
  
  # Compiling
