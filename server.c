@@ -1,7 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   server.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mnikolov <mnikolov@student.42lausanne.ch>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/12/10 11:13:45 by mnikolov          #+#    #+#             */
+/*   Updated: 2021/12/16 14:06:07 by mnikolov         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minitalk.h"
 #include "libft/libft.h"
-
-void	handler(int sig, siginfo_t *info, void *empty)
+/*
+** This function is the handler for messaging signals (SIGUSR1 = 0,
+** SIGUSR2 = 1). It will keep tracking of the received bits until it has
+** a full character, printing it and resetting.
+*/
+void	handler(int signum, siginfo_t *info, void *empty)
 
 {
 	static int	value = 0;
@@ -9,7 +25,7 @@ void	handler(int sig, siginfo_t *info, void *empty)
 
 	(void)info;
 	(void)empty;
-	if (sig == SIGUSR1)
+	if (signum == SIGUSR1)
 		value += 1 << bit;
 	bit += 1;
 	if (bit == 8)
@@ -26,8 +42,8 @@ int	main(void)
 	struct sigaction	sa;
 
 	write(1, "PID: ", 5);
-	ft_putnbr_fd(getpid(), 1);
-	write(1, "\n", 1);
+	ft_putnbr_fd(getpid(), 1);		// getpid() to output to the user its PID, and 
+	write(1, "\n", 1);				// later will be used to compile client.
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_sigaction = &handler;
 	sigaction(SIGUSR1, &sa, 0);
@@ -36,7 +52,7 @@ int	main(void)
 		write(1, "Error\n", 6);
 	if ((sigaction(SIGUSR2, &sa, 0)) < 0)
 		write(1, "Error\n", 6);
-	while (1)
-		pause();
+	while (1)						// The function then enters an infinite pause() loop, 
+		pause();					// waiting for signals from client.
 	return (0);
 }
